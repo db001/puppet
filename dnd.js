@@ -22,19 +22,16 @@ async function run() {
     });
 
 
-    await page.waitForSelector('.ct-quick-info__abilities .ct-quick-info__ability .ddbc-ability-summary__label', {
-            visible: true
-        })
+    await page.waitForSelector(
+        '.ct-quick-info__abilities .ct-quick-info__ability .ddbc-ability-summary__label', {
+        visible: true
+    })
 
-    // const abilities = await page.$eval('.ct-quick-info__abilities .ct-quick-info__ability .ddbc-ability-summary__label',
-    //     element => element.innerText
-    // )
-
-    const abilities = await page.$eval('.ct-quick-info__abilities .ct-quick-info__ability .ddbc-ability-summary__label',
-        e => e.innerHTML
-    );
-
-    console.log(abilities)
+    // const abilities = await page.$eval(
+    //     '.ct-quick-info__abilities .ct-quick-info__ability .ddbc-ability-summary__label',
+    //     e => e.innerHTML
+    // );
+    /* Returns first element only */
 
     await page.waitForSelector('.ddbc-character-name', {
         visible: true
@@ -47,13 +44,10 @@ async function run() {
     console.log(name)
 
 
-    // await page.waitForSelector('.ct-quick-info__abilities .ct-quick-info__ability .ddbc-ability-summary__label', {
-    //     visible: true
-    // });
-
-    // const abilities = await page.$$eval('.ddbc-ability-summary .ddbc-ability-summary__heading',
-    //     el => el.textContent
-    // )
+    const abilities = await page.$$eval('.ddbc-ability-summary .ddbc-ability-summary__heading',
+        el => el.map(e => e.innerHTML)
+    )
+    /* Returns array of headings - yay! */
 
     // const abilities = await page.evaluate(() =>
     //     Array.from(
@@ -64,8 +58,9 @@ async function run() {
     //         return el.textContent
     //     }
     // )
+    /* Returns undefined */
 
-    // console.log(abilities);
+    console.log(abilities);
 
     await browser.close();
 }
