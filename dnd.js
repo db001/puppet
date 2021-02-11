@@ -21,17 +21,12 @@ async function run() {
         waitUntil: 'domcontentloaded'
     });
 
+    const char = {};
 
     await page.waitForSelector(
         '.ct-quick-info__abilities .ct-quick-info__ability .ddbc-ability-summary__label', {
         visible: true
     })
-
-    // const abilities = await page.$eval(
-    //     '.ct-quick-info__abilities .ct-quick-info__ability .ddbc-ability-summary__label',
-    //     e => e.innerHTML
-    // );
-    /* Returns first element only */
 
     await page.waitForSelector('.ddbc-character-name', {
         visible: true
@@ -41,26 +36,34 @@ async function run() {
         el => el.textContent
     );
 
-    console.log(name)
+    console.log(name);
 
+    char.name = name;
 
-    const abilities = await page.$$eval('.ddbc-ability-summary .ddbc-ability-summary__heading',
-        el => el.map(e => e.innerHTML)
+    const abilities = await page.$$eval('.ddbc-ability-summary',
+        el => el.map(e => {
+            return {
+                attr: e.querySelector('.ddbc-ability-summary__label').textContent,
+                mod: `${e.querySelector('.ddbc-signed-number__sign').textContent}${e.querySelector('.ddbc-signed-number__number').textContent}`,
+                total: e.querySelector('.ddbc-ability-summary__secondary').textContent
+            }
+        })
     )
     /* Returns array of headings - yay! */
 
-    // const abilities = await page.evaluate(() =>
-    //     Array.from(
-    //         document.querySelectorAll('.ddbc-ability-summary .ddbc-ability-summary__heading')
-    //     ),
-    //     el => {
-    //         console.log(el)
-    //         return el.textContent
-    //     }
-    // )
-    /* Returns undefined */
+    char.abilities = abilities;
 
-    console.log(abilities);
+    // console.log(abilities);
+
+    const initiative = await page.$eval('.ct-initiative-box__value',
+        el => {
+            return el.querySelector('.ddbc-signed-number__sign').textContent + el.querySelector('.ddbc-signed-number__number').textContent;
+        }
+    )
+
+    char.initiative = initiative;
+
+    console.log(char);
 
     await browser.close();
 }
