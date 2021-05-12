@@ -3,21 +3,13 @@ const run = require("./redlist");
 
 const app = express();
 
-// const redlist = getRed();
+let redlist = {};
 
-// async function getRed() {
-//     const red = await run();
-//     return red;
-// }
-
-let redlist = [];
-
-const INTERVAL = 1000 * 5;
+const INTERVAL = 1000 * 60 * 10;
 
 setInterval(async function () {
 	const red = await run();
 	redlist = red;
-	console.log(redlist);
 }, INTERVAL);
 
 app.get("/", (req, res) => {
@@ -25,7 +17,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/redlist", async (req, res) => {
-	res.send({ redlist });
+	res.send(redlist);
 });
 
 const port = 5000;

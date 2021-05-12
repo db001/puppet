@@ -13,26 +13,41 @@ async function run() {
 		browser.close();
 	});
 
-	await page.goto(
-		"https://www.gov.uk/guidance/transport-measures-to-protect-the-uk-from-variant-strains-of-covid-19",
-		{
-			waitUntil: "domcontentloaded",
-		}
-	);
+	await page.goto("https://www.gov.uk/guidance/red-amber-and-green-list-rules-for-entering-england", {
+		waitUntil: "domcontentloaded",
+	});
 
-	await page.waitForSelector(".govspeak ul:first-of-type");
+	await page.waitForSelector("#red-list-of-countries-and-territories + table tr th[scope='row']");
 
-	const redlist = await page.$$eval(".govspeak ul:first-of-type li", (el) =>
+	const redlist = await page.$$eval("#red-list-of-countries-and-territories + table tr th[scope='row']", (el) =>
 		el.map((e) => {
 			return e.innerText;
 		})
 	);
 
-	// console.log(redlist);
+	const amberlist = await page.$$eval("#amber-list-of-countries-and-territories + table tr th[scope='row']", (el) =>
+		el.map((e) => {
+			return e.innerText;
+		})
+	);
+
+	const greenlist = await page.$$eval(
+		"[id*='green-list-of-countries-and-territories'] + table tr th[scope='row']",
+		(el) =>
+			el.map((e) => {
+				return e.innerText;
+			})
+	);
+
+	const obj = {
+		red: redlist,
+		amber: amberlist,
+		green: greenlist,
+	};
 
 	await browser.close();
 
-	return redlist;
+	return obj;
 }
 
 module.exports = run;
